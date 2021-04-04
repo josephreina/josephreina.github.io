@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Joseph Reina&#39;s website</title>
+    <link>http://josephreina.github.io/</link>
+    <description>Recent content on Joseph Reina&#39;s website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="http://josephreina.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>About Joseph Reina</title>
+      <link>http://josephreina.github.io/about/</link>
+      <pubDate>Thu, 05 May 2016 21:48:51 -0700</pubDate>
+      
+      <guid>http://josephreina.github.io/about/</guid>
+      <description>My name is Joseph Reina. I am a sophomore sports media and communications major at the University of Nebraska-Lincoln. I also currently play professional soccer for the Omaha Kings in the second division of the Major Arena Soccer League.</description>
+    </item>
+    
+  </channel>
+</rss>
