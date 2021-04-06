@@ -1,16 +1,15 @@
 ---
-title: How impactful are Red Cards?
-author: Joseph Reina
-date: '2021-04-03'
-slug: how-impactful-are-red-cards
+title: Importance of Red Cards
+author: R package build
+date: '2021-04-05'
+slug: Importance-of-red-cards
 categories:
   - R
 tags:
-  - soccer
   - EPL
   - red cards
+  - soccer
 ---
-
 Besides goals, there are few things in soccer that change games quite like a red card. Late in an important match, the last thing that any manager wants is one of their players being sent off, reducing their team to ten men, or at least, that's what common sense would say. However red cards do not automatically equate a loss and quite often teams manage to hang on to tie or even win while down a player. So let's take a look at just how costly red cards are, and are earlier red cards more detrimental than later red cards?  
 
 ```{r}
@@ -44,6 +43,7 @@ RCD <- realfootball %>%
 RCD
 ```
 
+
 This was the tricky bit. After sorting out the time, result, and total, I separated the regular time and additional time after the 45th minute so that red cards during added time would be represented in their respective halves. What this means is red cards that occurred in the 45+5 minute still counts as a red card in the 45th minute and not the 50th minute due to the nature of the game. Now we can see "RegularTime" and "AddedTime" which helps account for the red cards during added time while still counting it as part of the half it occurred in. 
 
 From there, I sorted every red card into 6 groups based on when it it occured in the match. All red cards from the first 15 minutes became one data set, and every 15 minute increment for the rest of the match. I felt that the 6 data points would be more digestible for the readers rather than 90 different data points. I could go with five minute increments as well but I chose 15 because I felt it would be easier to comprehend and there was more data per increment for 15 rather than five. I didn't do ten minute increments because I feel that red cards from the 45th minute or before halftime should not be comparable to red cards from after halftime, so 15 minute increments was perfect.
@@ -74,6 +74,7 @@ RCD %>%
 For the graph I stacked all the red cards from their corresponding section into one column and sorted it by whether the team won, lost or tied. this shows us the results of every team who recieved a red card over the season  and how they fared in the match based on when the red card occurred.
 
 As we can see, In every section from the first minute to the 60th minute, the majority of teams who recieved a red card went on to lose the game. However, from the 61st minute to the 75th minute, teams actually had a better chance of winning and tying than they did of losing. In the 76th minute to the 90th minute we see a return to what we would expect with more losses than wins or ties again. 
+
 
 ```{r}
 ggplot(footballredcards, aes(x=game_section, weight=total, fill=WLT)) + 
@@ -115,5 +116,3 @@ ggplot() + geom_bar(data=footballredcards, aes(x=game_section, weight=total, fil
 With this in mind, a reason that so many teams in the final 30 minutes went on to win or tie might be due to a player making a rash tackle or decision to preserve a lead and the opposing team did not have enough time to effectively make use of their numeric advantage.
 
 In the end, playing with 10 players definitely hurts a team's chances of winning, and red cards in the first 60 minutes are the biggest culprit.
-
-
