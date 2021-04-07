@@ -2,12 +2,34 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://josephreina.github.io/</loc>
-  </url><url>
     <loc>http://josephreina.github.io/categories/</loc>
+    <lastmod>2021-04-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://josephreina.github.io/tags/epl/</loc>
+    <lastmod>2021-04-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://josephreina.github.io/2021/04/06/importance-of-red-cards/</loc>
+    <lastmod>2021-04-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://josephreina.github.io/</loc>
+    <lastmod>2021-04-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://josephreina.github.io/post/</loc>
+    <lastmod>2021-04-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://josephreina.github.io/categories/r/</loc>
+    <lastmod>2021-04-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://josephreina.github.io/tags/red-cards/</loc>
+    <lastmod>2021-04-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://josephreina.github.io/tags/soccer/</loc>
+    <lastmod>2021-04-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://josephreina.github.io/tags/</loc>
+    <lastmod>2021-04-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://josephreina.github.io/about/</loc>
+    <lastmod>2016-05-05T21:48:51-07:00</lastmod>
   </url>
 </urlset>
