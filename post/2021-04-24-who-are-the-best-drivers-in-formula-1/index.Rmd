@@ -1,0 +1,171 @@
+---
+title: Who are the best drivers in Formula 1?
+author: R package build
+date: '2021-04-24'
+slug: who-are-the-best-drivers-in-formula-1
+categories:
+  - R
+tags:
+  - F1
+---
+```{r}
+library(tidyverse)
+library(ggbump)
+library(ggalt)
+library(ggrepel)
+library(waffle)
+library(tidyverse)
+library(kableExtra)
+```
+
+```{r}
+F1data <- read_csv("F1simplifieddata.csv")
+```
+
+```{r}
+F1data %>%
+  ungroup() %>% 
+  summarise(
+    meanAvgTRP = mean(AvgTRP), 
+    meanAvgQP = mean(AvgQP)
+    )
+```
+
+```{r}
+Overperformers <- F1data %>% filter(Driver == "Lewis Hamilton" | Driver == "Charles Leclerc" | Driver == "Sergio Pérez" | Driver == "Max Verstappen" | Driver == "Daniel Ricciardo" | Driver == "George Russell (W)")
+```
+
+```{r}
+Mercedes <- F1data %>% filter(Team == "Mercedes") 
+```
+
+```{r}
+RedBull <- F1data %>% filter(Team == "Red Bull")
+```
+
+```{r}
+RacingPoint <- F1data %>% filter(Team == "Racing Point")
+```
+
+```{r}
+Renault <- F1data %>% filter(Team == "Renault")
+```
+
+```{r}
+McLaren <- F1data %>% filter(Team == "McLaren")
+```
+
+```{r}
+Ferrari <- F1data %>% filter(Team == "Ferrari")
+```
+
+```{r}
+AlphaTauri <- F1data %>% filter(Team == "AlphaTauri")
+```
+
+```{r}
+AlfaRomeo <- F1data %>% filter(Team == "Alfa Romeo")
+```
+
+```{r}
+Haas <- F1data %>% filter(Team == "Haas")
+```
+
+```{r}
+Williams <- F1data %>% filter(Team == "Williams")
+```
+
+```{r}
+ggplot() + geom_point(data=F1data, aes(x=AvgQP, y=AvgTRP, size=Points))+ 
+  geom_vline(xintercept = 10.845) + 
+  geom_hline(yintercept = 11.20271) +
+  geom_point(data=Mercedes, aes(x=AvgQP, y=AvgTRP, size=Points), color="#00D2BE")+
+  geom_point(data=Ferrari, aes(x=AvgQP, y=AvgTRP, size=Points), color="#C00000") +
+  geom_point(data=RedBull, aes(x=AvgQP, y=AvgTRP, size=Points), color="#0600EF") +
+  geom_point(data=Renault, aes(x=AvgQP, y=AvgTRP, size=Points), color="#FFF500") +
+  geom_point(data=RacingPoint, aes(x=AvgQP, y=AvgTRP, size=Points), color="#F596C8")+
+  geom_point(data=McLaren, aes(x=AvgQP, y=AvgTRP, size=Points), color="#FF8700") +
+  geom_point(data=AlphaTauri, aes(x=AvgQP, y=AvgTRP, size=Points), color="#469BFF") +
+  geom_point(data=AlfaRomeo, aes(x=AvgQP, y=AvgTRP, size=Points), color="#960000") + 
+  geom_point(data=Haas, aes(x=AvgQP, y=AvgTRP, size=Points), color="#787878") +
+  geom_point(data=Williams, aes(x=AvgQP, y=AvgTRP, size=Points), color="#0082FA") +
+  geom_text_repel(
+    data=Overperformers, 
+    aes(x=AvgQP, y=AvgTRP, label=Driver)) +
+  labs(title="Who are the best drivers in F1?", subtitle="Many drivers stayed close to their teammates but a couple went above and beyond.", caption="Source: racefans.net | By Joseph Reina")  + theme_minimal() + 
+  theme(
+    plot.title = element_text(size = 16, face = "bold"),
+    axis.title = element_text(size = 8), 
+    plot.subtitle = element_text(size = 10), 
+    panel.grid.minor = element_blank()
+    )
+  
+```
+
++geom_text_repel(data=F1data, aes(x=AvgQP, y=AvgTRP, label=Driver))
+
+  geom_text_repel(data=Ferrari, aes(x=AvgQP, y=AvgTRP, label=Driver)) +
+  geom_text_repel(data=RedBull, aes(x=AvgQP, y=AvgTRP, label=Driver))  +
+  geom_text_repel(data=Williams, aes(x=AvgQP, y=AvgTRP, label=Driver))  +
+  geom_text_repel(data=AlphaTauri, aes(x=AvgQP, y=AvgTRP, label=Driver))  +
+
+
+
+```{r}
+ggplot() + 
+  geom_dumbbell(
+    data=F1data, 
+    aes(y=reorder(Mercedes, AvgTRP), x=LewisHamilton, xend=ValtteriBottas),
+    size = 1,
+    color = "grey",
+    colour_x = "green",
+    colour_xend = "red") + 
+  theme_minimal()
+```
+
+```{r}
+Merc <- c("Lewis Hamilton"=347, "Valtteri Bottas"=223)
+RBR <- c("Max Verstappen"=214, "Alex Albon"=105)
+SF <- c("Charles Leclerc"=98, "Sebastian Vettel"=33, 188)
+RF1 <- c("Daniel Ricciardo"=119, "Esteban Ocon"=63, 137)
+```
+
+```{r}
+iron(
+ waffle(RBR, 
+        rows = 10, 
+        title="Red Bull's Points", 
+        xlab="1 square = 1 point", 
+        colors = c("navy", "red", "white")
+        ),
+ waffle(SF, 
+        rows = 10, 
+        title="Ferrari's Points", 
+        xlab="1 square = 1 point", 
+        colors = c("red", "black", "white")
+        ) + labs(caption="Source: racefans.net | Graphic by Joseph Reina")
+)
+```
+
+```{r}
+F1table <- F1data %>%
+  group_by(Driver, Team, Points) %>%
+  arrange((AvgQP)) %>% 
+  ungroup()
+```
+
+```{r}
+F1table %>% kable() %>% 
+  kable_styling(bootstrap_options = c("striped", "condensed"))
+```
+
+```{r}
+ggplot(F1data, aes(x=reorder(Team, Points), weight=Points, fill=Driver)) + 
+  labs(
+    title="Each Team's Points Breakdown", subtitle="Our overperformers made up a vast majority of their teams points, except for Russell.", 
+    x="Team", 
+    y="Points")+ 
+  geom_bar() + 
+  coord_flip()
+```
+
