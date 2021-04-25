@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.81.0" />
+
+
+<title>Who are the best drivers in Formula 1? - Joseph Reina&#39;s website</title>
+<meta property="og:title" content="Who are the best drivers in Formula 1? - Joseph Reina&#39;s website">
+
+
+  <link href='http://josephreina.github.io/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/josephreina">GitHub</a></li>
+    
+    <li><a href="https://www.instagram.com/josephreina21/">Instagram</a></li>
+    
+    <li><a href="https://twitter.com/josephreina21">Twitter</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">14 min read</span>
+    
+
+    <h1 class="article-title">Who are the best drivers in Formula 1?</h1>
+
+    
+    <span class="article-date">2021-04-24</span>
+    
+
+    <div class="article-content">
+      
+<script src="http://josephreina.github.io/2021/04/24/who-are-the-best-drivers-in-formula-1/index_files/header-attrs/header-attrs.js"></script>
+<script src="http://josephreina.github.io/2021/04/24/who-are-the-best-drivers-in-formula-1/index_files/kePrint/kePrint.js"></script>
+<link href="http://josephreina.github.io/2021/04/24/who-are-the-best-drivers-in-formula-1/index_files/lightable/lightable.css" rel="stylesheet" />
+
+
+<p>Formula 1 is an ultra competitive sport where the best and worst on the grid are mere seconds apart at their best. Every year the constructors work to built the best car possible and when it is ready, it is the drivers’ job to scrape every little bit of pace out of the car while not crashing. The line between control and disaster can be millimeters and the drivers need to be ready for anything. So who are the best drivers on the grid? Ideally, every driver would have the exact same car but in Formula 1, some cars are miles better than others so pure results are not fair. However using data we can compare drivers to their teammates to see how they stack up in different aspects of racing: Points scored in a season, average race position, and average qualifying position. Each on their own contributes to the answer but does not answer it fully but together we are able to create a better idea of just who is the best driver in Formula 1.</p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.3.3     ✓ purrr   0.3.4
+## ✓ tibble  3.1.0     ✓ dplyr   1.0.5
+## ✓ tidyr   1.1.3     ✓ stringr 1.4.0
+## ✓ readr   1.4.0     ✓ forcats 0.5.1</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(ggbump)
+library(ggalt)</code></pre>
+<pre><code>## Registered S3 methods overwritten by &#39;ggalt&#39;:
+##   method                  from   
+##   grid.draw.absoluteGrob  ggplot2
+##   grobHeight.absoluteGrob ggplot2
+##   grobWidth.absoluteGrob  ggplot2
+##   grobX.absoluteGrob      ggplot2
+##   grobY.absoluteGrob      ggplot2</code></pre>
+<pre class="r"><code>library(ggrepel)
+library(waffle)
+library(tidyverse)
+library(kableExtra)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;kableExtra&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     group_rows</code></pre>
+<p>For starters, I got my data from racefans.net which had extensive data regarding points, final positions and average qualifying positions. from there I created a data set and made my own statistic based on where drivers finished throughout the season. I took all of the finish positions, added them together and divided by the total amount of races each driver participated in.
+Now would probably be a good time to mention the irregularities in my data. 2020 was not a normal year for anyone, and the motorsports world was no different. Several drivers missed races due to COVID-19, which meant that their spots had to be filled in so there were a number of replacement drivers. For Racing Point, Sergio Pérez missed two raced and was replaced by German, Nico Hülkenberg. Later in the season, Pérez’s teammate Lance Stroll was ruled out for a race due to COVID-like symptoms, which later was confirmed to be COVID. Once again, Hülkenberg stepped in and on both occasions, he actually scored points for his team.
+The other high profile positive case was that of world champion, Sir Lewis Hamilton. He was replaced by Williams driver George Russell which then meant that Russell’s spot needed to be filled. Jack Aitken took Russell’s spot for the race and was not able to score any points, unlike Russell who finished in ninth with the fastest lap of the race earning him three points. These points count for Russell and Mercedes and not Williams so in order to accommodate this, I created a separate driver in the data named George Russell (M) who raced for Mercedes and George Russell (W) who raced for Williams. I hope this clears up any confusion.
+The final replacement was for the final two races in after Romain Grosjean’s fiery crash in Bahrain that left him badly burned and unable to race. His replacement was Pietro Fittipaldi who did not score any points.</p>
+<pre class="r"><code>F1data &lt;- read_csv(&quot;F1simplifieddata.csv&quot;)</code></pre>
+<pre><code>## 
+## ── Column specification ────────────────────────────────────────────────────────
+## cols(
+##   Driver = col_character(),
+##   Team = col_character(),
+##   Points = col_double(),
+##   TRP = col_double(),
+##   AvgTRP = col_double(),
+##   AvgQP = col_double()
+## )</code></pre>
+<p>Now to the data. For my first graph, I wanted to show how drives compared to each other based on their average race finish position (AvgTRP), their average qualifying position, (AvgQP), and finally points scored throughout the season. To accompany this graph, I found the average of all of the average qualifying positions, and the average of all of the average qualifying positions.</p>
+<pre class="r"><code>F1data %&gt;%
+  ungroup() %&gt;% 
+  summarise(
+    meanAvgTRP = mean(AvgTRP), 
+    meanAvgQP = mean(AvgQP)
+    )</code></pre>
+<pre><code>## # A tibble: 1 x 2
+##   meanAvgTRP meanAvgQP
+##        &lt;dbl&gt;     &lt;dbl&gt;
+## 1       11.2      10.8</code></pre>
+<p>These next lines of code will allow me to change the colors of drivers in the next graph and draw attention to certain drivers I want to highlight.</p>
+<pre class="r"><code>Overperformers &lt;- F1data %&gt;% filter(Driver == &quot;Lewis Hamilton&quot; | Driver == &quot;Charles Leclerc&quot; | Driver == &quot;Sergio Pérez&quot; | Driver == &quot;Max Verstappen&quot; | Driver == &quot;Daniel Ricciardo&quot; | Driver == &quot;George Russell (W)&quot;)</code></pre>
+<pre class="r"><code>Mercedes &lt;- F1data %&gt;% filter(Team == &quot;Mercedes&quot;) </code></pre>
+<pre class="r"><code>RedBull &lt;- F1data %&gt;% filter(Team == &quot;Red Bull&quot;)</code></pre>
+<pre class="r"><code>RacingPoint &lt;- F1data %&gt;% filter(Team == &quot;Racing Point&quot;)</code></pre>
+<pre class="r"><code>Renault &lt;- F1data %&gt;% filter(Team == &quot;Renault&quot;)</code></pre>
+<pre class="r"><code>McLaren &lt;- F1data %&gt;% filter(Team == &quot;McLaren&quot;)</code></pre>
+<pre class="r"><code>Ferrari &lt;- F1data %&gt;% filter(Team == &quot;Ferrari&quot;)</code></pre>
+<pre class="r"><code>AlphaTauri &lt;- F1data %&gt;% filter(Team == &quot;AlphaTauri&quot;)</code></pre>
+<pre class="r"><code>AlfaRomeo &lt;- F1data %&gt;% filter(Team == &quot;Alfa Romeo&quot;)</code></pre>
+<pre class="r"><code>Haas &lt;- F1data %&gt;% filter(Team == &quot;Haas&quot;)</code></pre>
+<pre class="r"><code>Williams &lt;- F1data %&gt;% filter(Team == &quot;Williams&quot;)</code></pre>
+<p>In the top right of this graph are drivers with low qualifying positions and low race finish positions. This mostly is comprised of the teams with slow cars. Just because the drivers are in this quarter does not mean they are automatically bad. They simply are not able to compete with other drivers in their current car. A better way to see how good a driver is, would be to compare them to their primary teammate. For example, George Russell and his teammate Nicholas Latifi have nearly identical average race finish positions, but in qualifying, Russell is able to out-qualify his teammate by over three positions. this shows us that Russell is outperforming his teammate on pure pace but over a whole race their cars are unable to compete with anyone else on the grid and their finish positions are almost even.
+There are almost no drivers who fall into either side category of bad qualifying/good race or good qualifying/bad race.The only one who comes close is Nico Hülkenberg who as we mentioned only raced in three races and due to a mechanical failure, really only two.
+All the other drivers fall into the good qualifying/good race spot with some further ahead than others. There is a clear separation between Hamilton, his teammate Valtteri Bottas, and Red Bull driver Max Verstappen. Everyone else falls into the midfield and basically fights for a chance at a podium every once in a while.
+Notice the distance between some of the circles that are the same color? Those are the teammates from the code just before this. Some of these drivers were able to out-perform their teammates by a substantial amount and were going to talk about them a lot. The ones I want to focus on are The aforementioned George Russell, Charles Leclerc, Daniel Ricciardo, Sergio (Checo) Pérez, Max verstappen, and Sir Lewis Hamilton.</p>
+<pre class="r"><code>ggplot() + geom_point(data=F1data, aes(x=AvgQP, y=AvgTRP, size=Points))+ 
+  geom_vline(xintercept = 10.845) + 
+  geom_hline(yintercept = 11.20271) +
+  geom_point(data=Mercedes, aes(x=AvgQP, y=AvgTRP, size=Points), color=&quot;#00D2BE&quot;)+
+  geom_point(data=Ferrari, aes(x=AvgQP, y=AvgTRP, size=Points), color=&quot;#C00000&quot;) +
+  geom_point(data=RedBull, aes(x=AvgQP, y=AvgTRP, size=Points), color=&quot;#0600EF&quot;) +
+  geom_point(data=Renault, aes(x=AvgQP, y=AvgTRP, size=Points), color=&quot;#FFF500&quot;) +
+  geom_point(data=RacingPoint, aes(x=AvgQP, y=AvgTRP, size=Points), color=&quot;#F596C8&quot;)+
+  geom_point(data=McLaren, aes(x=AvgQP, y=AvgTRP, size=Points), color=&quot;#FF8700&quot;) +
+  geom_point(data=AlphaTauri, aes(x=AvgQP, y=AvgTRP, size=Points), color=&quot;#469BFF&quot;) +
+  geom_point(data=AlfaRomeo, aes(x=AvgQP, y=AvgTRP, size=Points), color=&quot;#960000&quot;) + 
+  geom_point(data=Haas, aes(x=AvgQP, y=AvgTRP, size=Points), color=&quot;#787878&quot;) +
+  geom_point(data=Williams, aes(x=AvgQP, y=AvgTRP, size=Points), color=&quot;#0082FA&quot;) +
+  geom_text_repel(
+    data=Overperformers, 
+    aes(x=AvgQP, y=AvgTRP, label=Driver)) +
+  labs(title=&quot;Who are the best drivers in F1?&quot;, subtitle=&quot;Many drivers stayed close to their teammates but a couple went above and beyond.&quot;, caption=&quot;Source: racefans.net | By Joseph Reina&quot;)  + theme_minimal() + 
+  theme(
+    plot.title = element_text(size = 16, face = &quot;bold&quot;),
+    axis.title = element_text(size = 8), 
+    plot.subtitle = element_text(size = 10), 
+    panel.grid.minor = element_blank()
+    )</code></pre>
+<p><img src="http://josephreina.github.io/2021/04/24/who-are-the-best-drivers-in-formula-1/index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p>For the next chart, I will create separate data sets with points to compare teammates and teams that finished close to each other.</p>
+<pre class="r"><code>Merc &lt;- c(&quot;Lewis Hamilton&quot;=347, &quot;Valtteri Bottas&quot;=223)
+RBR &lt;- c(&quot;Max Verstappen&quot;=214, &quot;Alex Albon&quot;=105)
+SF &lt;- c(&quot;Charles Leclerc&quot;=98, &quot;Sebastian Vettel&quot;=33, 51)
+RF1 &lt;- c(&quot;Daniel Ricciardo&quot;=119, &quot;Esteban Ocon&quot;=63)</code></pre>
+<p>As we can see, Mercedes blew everyone out of the water, with Hamilton scoring enough points by himself to win the constructors championship. While Bottas scored the second most points of anyone on the grid, he was still destroyed by his teammate.
+For Red Bull, their second driver, youngster Alex Albon was unable to come close to his teammate at all with Verstappen doubling his points total over the season. Verstappen has shown that year after year he is able to consistently get the most out of his car and compete with a Mercedes car that was dominant throughout the year.</p>
+<pre class="r"><code>iron(
+ waffle(Merc, 
+        rows = 10, 
+        title=&quot;Mercedes&#39; Points&quot;, 
+        xlab=&quot;1 square = 1 point&quot;, 
+        colors = c(&quot;black&quot;, &quot;grey&quot;, &quot;white&quot;)
+        ),
+ waffle(RBR, 
+        rows = 10, 
+        title=&quot;Red Bull&#39;s Points&quot;, 
+        xlab=&quot;1 square = 1 point&quot;, 
+        colors = c(&quot;navy&quot;, &quot;red&quot;, &quot;white&quot;)
+        ) + labs(caption=&quot;Source: racefans.net | Graphic by Joseph Reina&quot;)
+)</code></pre>
+<p><img src="http://josephreina.github.io/2021/04/24/who-are-the-best-drivers-in-formula-1/index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p>Renault had a difficult season with Esteban Ocon struggling to keep up with his experienced teammate Daniel Ricciardo, who was able to take a seeming average car up to fifth in the final standings.
+Ferrari had one of their worst seasons in their rich history due to a power unit that was by far the worst on the grid. However, youngster Charles Leclerc was able to score decent results several times over the season including a second place finish in Austria and a third place finish at Silverstone. He was able to outscore his teammate, veteran and four-time world champion, Sebastian Vettel by nearly three times as many points, a truly remarkable feat.</p>
+<pre class="r"><code>iron(
+  waffle(RF1, 
+        rows = 10, 
+        title=&quot;Renault&#39;s Points&quot;, 
+        xlab=&quot;1 square = 1 point&quot;, 
+        colors = c(&quot;yellow&quot;, &quot;black&quot;, &quot;white&quot;)
+        ) ,
+waffle(SF, 
+        rows = 10, 
+        title=&quot;Ferrari&#39;s Points&quot;, 
+        xlab=&quot;1 square = 1 point&quot;, 
+        colors = c(&quot;red&quot;, &quot;black&quot;, &quot;white&quot;)
+        )+ labs(caption=&quot;Source: racefans.net | Graphic by Joseph Reina&quot;)
+)</code></pre>
+<p><img src="http://josephreina.github.io/2021/04/24/who-are-the-best-drivers-in-formula-1/index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p>Next let’s take a look at the actual table at the end of the season. Drivers that do better in races obviously will get more points because that is how points work. This is the table that shows just how good Pérez was. He was able to average beating his teammate by over three and a half positions. If we look at Average Race Position (AvgTRP), we see that the table is pretty consistent along that as well. However, there is a lot of overlap in the Average Qualifying position column. We’ll take a look at that next.</p>
+<pre class="r"><code>F1table &lt;- F1data %&gt;%
+  group_by(Driver, Team, Points) %&gt;%
+  arrange(desc(Points)) %&gt;% 
+  ungroup()</code></pre>
+<pre class="r"><code>F1table %&gt;% kable() %&gt;% 
+  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;condensed&quot;))</code></pre>
+<table class="table table-striped table-condensed" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Driver
+</th>
+<th style="text-align:left;">
+Team
+</th>
+<th style="text-align:right;">
+Points
+</th>
+<th style="text-align:right;">
+TRP
+</th>
+<th style="text-align:right;">
+AvgTRP
+</th>
+<th style="text-align:right;">
+AvgQP
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Lewis Hamilton
+</td>
+<td style="text-align:left;">
+Mercedes
+</td>
+<td style="text-align:right;">
+347
+</td>
+<td style="text-align:right;">
+30
+</td>
+<td style="text-align:right;">
+1.875
+</td>
+<td style="text-align:right;">
+1.69
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Valtteri Bottas
+</td>
+<td style="text-align:left;">
+Mercedes
+</td>
+<td style="text-align:right;">
+223
+</td>
+<td style="text-align:right;">
+89
+</td>
+<td style="text-align:right;">
+5.240
+</td>
+<td style="text-align:right;">
+2.29
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Max Verstappen
+</td>
+<td style="text-align:left;">
+Red Bull
+</td>
+<td style="text-align:right;">
+214
+</td>
+<td style="text-align:right;">
+129
+</td>
+<td style="text-align:right;">
+7.590
+</td>
+<td style="text-align:right;">
+3.12
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sergio Pérez
+</td>
+<td style="text-align:left;">
+Racing Point
+</td>
+<td style="text-align:right;">
+125
+</td>
+<td style="text-align:right;">
+111
+</td>
+<td style="text-align:right;">
+7.400
+</td>
+<td style="text-align:right;">
+7.07
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Daniel Ricciardo
+</td>
+<td style="text-align:left;">
+Renault
+</td>
+<td style="text-align:right;">
+119
+</td>
+<td style="text-align:right;">
+128
+</td>
+<td style="text-align:right;">
+7.530
+</td>
+<td style="text-align:right;">
+7.71
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Carlos Sainz Jr. 
+</td>
+<td style="text-align:left;">
+McLaren
+</td>
+<td style="text-align:right;">
+105
+</td>
+<td style="text-align:right;">
+155
+</td>
+<td style="text-align:right;">
+9.120
+</td>
+<td style="text-align:right;">
+8.29
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Alexander Albon
+</td>
+<td style="text-align:left;">
+Red Bull
+</td>
+<td style="text-align:right;">
+105
+</td>
+<td style="text-align:right;">
+144
+</td>
+<td style="text-align:right;">
+8.470
+</td>
+<td style="text-align:right;">
+7.18
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Charles Leclerc
+</td>
+<td style="text-align:left;">
+Ferrari
+</td>
+<td style="text-align:right;">
+98
+</td>
+<td style="text-align:right;">
+171
+</td>
+<td style="text-align:right;">
+10.060
+</td>
+<td style="text-align:right;">
+8.29
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Lando Norris
+</td>
+<td style="text-align:left;">
+McLaren
+</td>
+<td style="text-align:right;">
+97
+</td>
+<td style="text-align:right;">
+145
+</td>
+<td style="text-align:right;">
+8.530
+</td>
+<td style="text-align:right;">
+8.24
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pierre Gasly
+</td>
+<td style="text-align:left;">
+AlphaTauri
+</td>
+<td style="text-align:right;">
+75
+</td>
+<td style="text-align:right;">
+176
+</td>
+<td style="text-align:right;">
+10.350
+</td>
+<td style="text-align:right;">
+10.12
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Lance Stroll
+</td>
+<td style="text-align:left;">
+Racing Point
+</td>
+<td style="text-align:right;">
+75
+</td>
+<td style="text-align:right;">
+177
+</td>
+<td style="text-align:right;">
+11.060
+</td>
+<td style="text-align:right;">
+8.63
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Esteban Ocon
+</td>
+<td style="text-align:left;">
+Renault
+</td>
+<td style="text-align:right;">
+63
+</td>
+<td style="text-align:right;">
+188
+</td>
+<td style="text-align:right;">
+11.050
+</td>
+<td style="text-align:right;">
+9.94
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sebastian Vettel
+</td>
+<td style="text-align:left;">
+Ferrari
+</td>
+<td style="text-align:right;">
+33
+</td>
+<td style="text-align:right;">
+196
+</td>
+<td style="text-align:right;">
+11.530
+</td>
+<td style="text-align:right;">
+12.24
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Daniil Kvyat
+</td>
+<td style="text-align:left;">
+AlphaTauri
+</td>
+<td style="text-align:right;">
+32
+</td>
+<td style="text-align:right;">
+190
+</td>
+<td style="text-align:right;">
+11.170
+</td>
+<td style="text-align:right;">
+12.12
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Nico Hülkenberg
+</td>
+<td style="text-align:left;">
+Racing Point
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+35
+</td>
+<td style="text-align:right;">
+11.670
+</td>
+<td style="text-align:right;">
+12.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Kimi Räikkönen
+</td>
+<td style="text-align:left;">
+Alfa Romeo
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+228
+</td>
+<td style="text-align:right;">
+13.410
+</td>
+<td style="text-align:right;">
+16.65
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Antonio Giovinazzi
+</td>
+<td style="text-align:left;">
+Alfa Romeo
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+254
+</td>
+<td style="text-align:right;">
+14.940
+</td>
+<td style="text-align:right;">
+16.88
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+George Russell (M)
+</td>
+<td style="text-align:left;">
+Mercedes
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:right;">
+9.000
+</td>
+<td style="text-align:right;">
+2.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Romain Grosjean
+</td>
+<td style="text-align:left;">
+Haas
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+236
+</td>
+<td style="text-align:right;">
+15.730
+</td>
+<td style="text-align:right;">
+17.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Kevin Magnussen
+</td>
+<td style="text-align:left;">
+Haas
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+282
+</td>
+<td style="text-align:right;">
+16.590
+</td>
+<td style="text-align:right;">
+16.88
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+George Russell (W)
+</td>
+<td style="text-align:left;">
+Williams
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+261
+</td>
+<td style="text-align:right;">
+16.310
+</td>
+<td style="text-align:right;">
+15.56
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Nicholas Latifi
+</td>
+<td style="text-align:left;">
+Williams
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+276
+</td>
+<td style="text-align:right;">
+16.240
+</td>
+<td style="text-align:right;">
+18.88
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Jack Aitken
+</td>
+<td style="text-align:left;">
+Williams
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:right;">
+16.000
+</td>
+<td style="text-align:right;">
+18.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pietro Fittipaldi
+</td>
+<td style="text-align:left;">
+Haas
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+36
+</td>
+<td style="text-align:right;">
+18.000
+</td>
+<td style="text-align:right;">
+19.50
+</td>
+</tr>
+</tbody>
+</table>
+<p>Drivers get no points for better qualifying performances in Formula 1, it just sets them up to succeed in the race the following day. But what if they did? what if the drivers who qualified higher throughout the season got points based on that instead of the race? Hamilton still wins but now Russell has worked his way into second place. Now this is to be taken with a grain of salt because it’s only from one race but still impressive in my book. aside from that, there are several little swaps throughout the field, but I want to focus on Leclerc again. On average he out qualified his teammate by just under four positions. That is absurd consistency to over-perform for that long.</p>
+<pre class="r"><code>F1table &lt;- F1data %&gt;%
+  group_by(Driver, Team, Points) %&gt;%
+  arrange((AvgQP)) %&gt;% 
+  ungroup()</code></pre>
+<pre class="r"><code>F1table %&gt;% kable() %&gt;% 
+  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;condensed&quot;))</code></pre>
+<table class="table table-striped table-condensed" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Driver
+</th>
+<th style="text-align:left;">
+Team
+</th>
+<th style="text-align:right;">
+Points
+</th>
+<th style="text-align:right;">
+TRP
+</th>
+<th style="text-align:right;">
+AvgTRP
+</th>
+<th style="text-align:right;">
+AvgQP
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Lewis Hamilton
+</td>
+<td style="text-align:left;">
+Mercedes
+</td>
+<td style="text-align:right;">
+347
+</td>
+<td style="text-align:right;">
+30
+</td>
+<td style="text-align:right;">
+1.875
+</td>
+<td style="text-align:right;">
+1.69
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+George Russell (M)
+</td>
+<td style="text-align:left;">
+Mercedes
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:right;">
+9.000
+</td>
+<td style="text-align:right;">
+2.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Valtteri Bottas
+</td>
+<td style="text-align:left;">
+Mercedes
+</td>
+<td style="text-align:right;">
+223
+</td>
+<td style="text-align:right;">
+89
+</td>
+<td style="text-align:right;">
+5.240
+</td>
+<td style="text-align:right;">
+2.29
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Max Verstappen
+</td>
+<td style="text-align:left;">
+Red Bull
+</td>
+<td style="text-align:right;">
+214
+</td>
+<td style="text-align:right;">
+129
+</td>
+<td style="text-align:right;">
+7.590
+</td>
+<td style="text-align:right;">
+3.12
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sergio Pérez
+</td>
+<td style="text-align:left;">
+Racing Point
+</td>
+<td style="text-align:right;">
+125
+</td>
+<td style="text-align:right;">
+111
+</td>
+<td style="text-align:right;">
+7.400
+</td>
+<td style="text-align:right;">
+7.07
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Alexander Albon
+</td>
+<td style="text-align:left;">
+Red Bull
+</td>
+<td style="text-align:right;">
+105
+</td>
+<td style="text-align:right;">
+144
+</td>
+<td style="text-align:right;">
+8.470
+</td>
+<td style="text-align:right;">
+7.18
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Daniel Ricciardo
+</td>
+<td style="text-align:left;">
+Renault
+</td>
+<td style="text-align:right;">
+119
+</td>
+<td style="text-align:right;">
+128
+</td>
+<td style="text-align:right;">
+7.530
+</td>
+<td style="text-align:right;">
+7.71
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Lando Norris
+</td>
+<td style="text-align:left;">
+McLaren
+</td>
+<td style="text-align:right;">
+97
+</td>
+<td style="text-align:right;">
+145
+</td>
+<td style="text-align:right;">
+8.530
+</td>
+<td style="text-align:right;">
+8.24
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Carlos Sainz Jr. 
+</td>
+<td style="text-align:left;">
+McLaren
+</td>
+<td style="text-align:right;">
+105
+</td>
+<td style="text-align:right;">
+155
+</td>
+<td style="text-align:right;">
+9.120
+</td>
+<td style="text-align:right;">
+8.29
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Charles Leclerc
+</td>
+<td style="text-align:left;">
+Ferrari
+</td>
+<td style="text-align:right;">
+98
+</td>
+<td style="text-align:right;">
+171
+</td>
+<td style="text-align:right;">
+10.060
+</td>
+<td style="text-align:right;">
+8.29
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Lance Stroll
+</td>
+<td style="text-align:left;">
+Racing Point
+</td>
+<td style="text-align:right;">
+75
+</td>
+<td style="text-align:right;">
+177
+</td>
+<td style="text-align:right;">
+11.060
+</td>
+<td style="text-align:right;">
+8.63
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Esteban Ocon
+</td>
+<td style="text-align:left;">
+Renault
+</td>
+<td style="text-align:right;">
+63
+</td>
+<td style="text-align:right;">
+188
+</td>
+<td style="text-align:right;">
+11.050
+</td>
+<td style="text-align:right;">
+9.94
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pierre Gasly
+</td>
+<td style="text-align:left;">
+AlphaTauri
+</td>
+<td style="text-align:right;">
+75
+</td>
+<td style="text-align:right;">
+176
+</td>
+<td style="text-align:right;">
+10.350
+</td>
+<td style="text-align:right;">
+10.12
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Nico Hülkenberg
+</td>
+<td style="text-align:left;">
+Racing Point
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+35
+</td>
+<td style="text-align:right;">
+11.670
+</td>
+<td style="text-align:right;">
+12.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Daniil Kvyat
+</td>
+<td style="text-align:left;">
+AlphaTauri
+</td>
+<td style="text-align:right;">
+32
+</td>
+<td style="text-align:right;">
+190
+</td>
+<td style="text-align:right;">
+11.170
+</td>
+<td style="text-align:right;">
+12.12
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sebastian Vettel
+</td>
+<td style="text-align:left;">
+Ferrari
+</td>
+<td style="text-align:right;">
+33
+</td>
+<td style="text-align:right;">
+196
+</td>
+<td style="text-align:right;">
+11.530
+</td>
+<td style="text-align:right;">
+12.24
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+George Russell (W)
+</td>
+<td style="text-align:left;">
+Williams
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+261
+</td>
+<td style="text-align:right;">
+16.310
+</td>
+<td style="text-align:right;">
+15.56
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Kimi Räikkönen
+</td>
+<td style="text-align:left;">
+Alfa Romeo
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+228
+</td>
+<td style="text-align:right;">
+13.410
+</td>
+<td style="text-align:right;">
+16.65
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Antonio Giovinazzi
+</td>
+<td style="text-align:left;">
+Alfa Romeo
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+254
+</td>
+<td style="text-align:right;">
+14.940
+</td>
+<td style="text-align:right;">
+16.88
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Kevin Magnussen
+</td>
+<td style="text-align:left;">
+Haas
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+282
+</td>
+<td style="text-align:right;">
+16.590
+</td>
+<td style="text-align:right;">
+16.88
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Romain Grosjean
+</td>
+<td style="text-align:left;">
+Haas
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+236
+</td>
+<td style="text-align:right;">
+15.730
+</td>
+<td style="text-align:right;">
+17.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Jack Aitken
+</td>
+<td style="text-align:left;">
+Williams
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:right;">
+16.000
+</td>
+<td style="text-align:right;">
+18.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Nicholas Latifi
+</td>
+<td style="text-align:left;">
+Williams
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+276
+</td>
+<td style="text-align:right;">
+16.240
+</td>
+<td style="text-align:right;">
+18.88
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pietro Fittipaldi
+</td>
+<td style="text-align:left;">
+Haas
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+36
+</td>
+<td style="text-align:right;">
+18.000
+</td>
+<td style="text-align:right;">
+19.50
+</td>
+</tr>
+</tbody>
+</table>
+<p>Finally lets take a look at how many points each team scored and which drivers accounted for the most in their teams. Once again, it’s the usual suspects apart from George Russell who didn’t score any points all season in his Williams, but if you look really hard, you can see a little sliver on the end of the Mercedes bar. Those are his three points so hes not completely unrepresented.
+Besides him, again we can see Hamilton, Verstappen, and Leclerc dominating their team’s points total with Ricciardo and Pérez also scoring the majority of their team’s points.
+Another driver who deserves some acknowledgment is AlphaTauri’s Pierre Gasly who appears to dominate the points total. What must be taken into consideration is that Gasly won one race which accounted for a third of his entire points total throughout the season. Winning a race is definitely a great accomplishment, but the consistency is just not there. Even though he was able to out-qualify his teammate Daniil Kvyat by two positions on average, he averaged a finish position less than one higher than him and this was not due to the car being bad as we saw with Russell. The data shows that his car had good pace, he just was able to find it only on rare occasions.</p>
+<pre class="r"><code>ggplot(F1data, aes(x=reorder(Team, Points), weight=Points, fill=Driver)) + 
+  labs(
+    title=&quot;Each Team&#39;s Points Breakdown&quot;, subtitle=&quot;Our overperformers made up a vast majority of their teams points, except for Russell.&quot;, 
+    x=&quot;Team&quot;, 
+    y=&quot;Points&quot;)+ 
+  geom_bar() + 
+  coord_flip()+ labs(caption=&quot;Source: racefans.net | Graphic by Joseph Reina&quot;)</code></pre>
+<p><img src="http://josephreina.github.io/2021/04/24/who-are-the-best-drivers-in-formula-1/index_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p>So as we have learned, being a good driver requires lots of different aspects and there are some drivers who stick out in some fields, and some who stick out in others. Unfortunately due to the nature of the sport, drivers who have very competitive teammates are difficult to compare outside of their garage. Pairs like Lando Norris and Carlos Sainz Jr., or Antonio Giovinazzi and Kimi Räikkönen deserve credit fo their achievements but they cannot be directly compared to other drivers because their equipment is not equal.
+When it comes to winning, Lewis Hamilton wins races. He has the best car and get the job done more often than not as evidenced by his average race position of 1.875. Max Verstappen is able to challenge Mercedes and the only thing holding him and Red Bull back is their lack of a competitive teammate helping Max to score points by putting the Mercedes under pressure. With Checo Pérez as his teammate in 2021 they will be hoping to finally end the seven years of Mercedes dominance. Daniel Ricciardo definitely helped keep Renault relevant in their final season before becoming Alpine Racing and he will look to continue his success as he races for McLaren in 2021. Charles Leclerc took the worst Ferrari race car in years and managed to make it look decent on occasions. His qualifying pace is frightening and teams should be on the lookout as the Ferrari boasts a more competitive car this season. Did someone say potential race winner this season? I wouldn’t bet on it but at the same time I wouldn’t be surprised if it happened. Finally, George Russell. This is another year of gaining good racing experience in one of the worst cars on the grid before he eyes a move to a new team. His agent is current Mercedes boss Toto Wolff, so naturally there is lots of speculation that he will move to Mercedes in the future to partner Hamilton. If he keeps perfecting his craft, there is a good chance he will land a seat in a top car and could potentially be a future world champion.</p>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+
+    
+  </body>
+</html>
+
