@@ -8,6 +8,9 @@ categories:
 tags:
   - F1
 ---
+
+  Formula 1 is an ultra competitive sport where the best and worst on the grid are mere seconds apart at their best. Every year the constructors work to built the best car possible and when it is ready, it is the drivers' job to scrape every little bit of pace out of the car while not crashing. The line between control and disaster can be millimeters and the drivers need to be ready for anything. So who are the best drivers on the grid? Ideally, every driver would have the exact same car but in Formula 1, some cars are miles better than others so pure results are not fair. However using data we can compare drivers to their teammates to see how they stack up in different aspects of racing: Points scored in a season, average race position, and average qualifying position. Each on their own contributes to the answer but does not answer it fully but together we are able to create a better idea of just who is the best driver in Formula 1.
+
 ```{r}
 library(tidyverse)
 library(ggbump)
@@ -18,9 +21,16 @@ library(tidyverse)
 library(kableExtra)
 ```
 
+  For starters, I got my data from racefans.net which had extensive data regarding points, final positions and average qualifying positions. from there I created a data set and made my own statistic based on where drivers finished throughout the season. I took all of the finish positions, added them together and divided by the total amount of races each driver participated in. 
+  Now would probably be a good time to mention the irregularities in my data. 2020 was not a normal year for anyone, and the motorsports world was no different. Several drivers missed races due to COVID-19, which meant that their spots had to be filled in so there were a number of replacement drivers. For Racing Point, Sergio Pérez missed two raced and was replaced by German, Nico Hülkenberg. Later in the season, Pérez's teammate Lance Stroll was ruled out for a race due to COVID-like symptoms, which later was confirmed to be COVID. Once again, Hülkenberg stepped in and on both occasions, he actually scored points for his team. 
+  The other high profile positive case was that of world champion, Sir Lewis Hamilton. He was replaced by Williams driver George Russell which then meant that Russell's spot needed to be filled. Jack Aitken took Russell's spot for the race and was not able to score any points, unlike Russell who finished in ninth with the fastest lap of the race earning him three points. These points count for Russell and Mercedes and not Williams so in order to accommodate this, I created a separate driver in the data named George Russell (M) who raced for Mercedes and George Russell (W) who raced for Williams. I hope this clears up any confusion. 
+  The final replacement was for the final two races in after Romain Grosjean's fiery crash in Bahrain that left him badly burned and unable to race. His replacement was Pietro Fittipaldi who did not score any points.
+
 ```{r}
 F1data <- read_csv("F1simplifieddata.csv")
 ```
+
+Now to the data. For my first graph, I wanted to show how drives compared to each other based on their average race finish position (AvgTRP), their average qualifying position, (AvgQP), and finally points scored throughout the season. To accompany this graph, I found the average of all of the average qualifying positions, and the average of all of the average qualifying positions.
 
 ```{r}
 F1data %>%
@@ -30,6 +40,8 @@ F1data %>%
     meanAvgQP = mean(AvgQP)
     )
 ```
+
+These next lines of code will allow me to change the colors of drivers in the next graph and draw attention to certain drivers I want to highlight.
 
 ```{r}
 Overperformers <- F1data %>% filter(Driver == "Lewis Hamilton" | Driver == "Charles Leclerc" | Driver == "Sergio Pérez" | Driver == "Max Verstappen" | Driver == "Daniel Ricciardo" | Driver == "George Russell (W)")
@@ -75,6 +87,11 @@ Haas <- F1data %>% filter(Team == "Haas")
 Williams <- F1data %>% filter(Team == "Williams")
 ```
 
+   In the top right of this graph are drivers with low qualifying positions and low race finish positions. This mostly is comprised of the teams with slow cars. Just because the drivers are in this quarter does not mean they are automatically bad. They simply are not able to compete with other drivers in their current car. A better way to see how good a driver is, would be to compare them to their primary teammate. For example, George Russell and his teammate Nicholas Latifi have nearly identical average race finish positions, but in qualifying, Russell is able to out-qualify his teammate by over three positions. this shows us that Russell is outperforming his teammate on pure pace but over a whole race their cars are unable to compete with anyone else on the grid and their finish positions are almost even.
+   There are almost no drivers who fall into either side category of bad qualifying/good race or good qualifying/bad race.The only one who comes close is Nico Hülkenberg who as we mentioned only raced in three races and due to a mechanical failure, really only two.
+   All the other drivers fall into the good qualifying/good race spot with some further ahead than others. There is a clear separation between Hamilton, his teammate Valtteri Bottas, and Red Bull driver Max Verstappen. Everyone else falls into the midfield and basically fights for a chance at a podium every once in a while.
+   Notice the distance between some of the circles that are the same color? Those are the teammates from the code just before this. Some of these drivers were able to out-perform their teammates by a substantial amount and were going to talk about them a lot. The ones I want to focus on are The aforementioned George Russell, Charles Leclerc, Daniel Ricciardo, Sergio (Checo) Pérez, Max verstappen, and Sir Lewis Hamilton. 
+
 ```{r}
 ggplot() + geom_point(data=F1data, aes(x=AvgQP, y=AvgTRP, size=Points))+ 
   geom_vline(xintercept = 10.845) + 
@@ -102,50 +119,70 @@ ggplot() + geom_point(data=F1data, aes(x=AvgQP, y=AvgTRP, size=Points))+
   
 ```
 
-+geom_text_repel(data=F1data, aes(x=AvgQP, y=AvgTRP, label=Driver))
-
-  geom_text_repel(data=Ferrari, aes(x=AvgQP, y=AvgTRP, label=Driver)) +
-  geom_text_repel(data=RedBull, aes(x=AvgQP, y=AvgTRP, label=Driver))  +
-  geom_text_repel(data=Williams, aes(x=AvgQP, y=AvgTRP, label=Driver))  +
-  geom_text_repel(data=AlphaTauri, aes(x=AvgQP, y=AvgTRP, label=Driver))  +
-
-
-
-```{r}
-ggplot() + 
-  geom_dumbbell(
-    data=F1data, 
-    aes(y=reorder(Mercedes, AvgTRP), x=LewisHamilton, xend=ValtteriBottas),
-    size = 1,
-    color = "grey",
-    colour_x = "green",
-    colour_xend = "red") + 
-  theme_minimal()
-```
+For the next chart, I will create separate data sets with points to compare teammates and teams that finished close to each other. 
 
 ```{r}
 Merc <- c("Lewis Hamilton"=347, "Valtteri Bottas"=223)
 RBR <- c("Max Verstappen"=214, "Alex Albon"=105)
-SF <- c("Charles Leclerc"=98, "Sebastian Vettel"=33, 188)
-RF1 <- c("Daniel Ricciardo"=119, "Esteban Ocon"=63, 137)
+SF <- c("Charles Leclerc"=98, "Sebastian Vettel"=33, 51)
+RF1 <- c("Daniel Ricciardo"=119, "Esteban Ocon"=63)
 ```
+
+  As we can see, Mercedes blew everyone out of the water, with Hamilton scoring enough points by himself to win the constructors championship. While Bottas scored the second most points of anyone on the grid, he was still destroyed by his teammate. 
+  For Red Bull, their second driver, youngster Alex Albon was unable to come close to his teammate at all with Verstappen doubling his points total over the season. Verstappen has shown that year after year he is able to consistently get the most out of his car and compete with a Mercedes car that was dominant throughout the year.
 
 ```{r}
 iron(
+ waffle(Merc, 
+        rows = 10, 
+        title="Mercedes' Points", 
+        xlab="1 square = 1 point", 
+        colors = c("black", "grey", "white")
+        ),
  waffle(RBR, 
         rows = 10, 
         title="Red Bull's Points", 
         xlab="1 square = 1 point", 
         colors = c("navy", "red", "white")
-        ),
- waffle(SF, 
+        ) + labs(caption="Source: racefans.net | Graphic by Joseph Reina")
+)
+```
+
+  Renault had a difficult season with Esteban Ocon struggling to keep up with his experienced teammate Daniel Ricciardo, who was able to take a seeming average car up to fifth in the final standings.
+  Ferrari had one of their worst seasons in their rich history due to a power unit that was by far the worst on the grid. However, youngster Charles Leclerc was able to score decent results several times over the season including a second place finish in Austria and a third place finish at Silverstone. He was able to outscore his teammate, veteran and four-time world champion, Sebastian Vettel by nearly three times as many points, a truly remarkable feat.
+
+```{r}
+iron(
+  waffle(RF1, 
+        rows = 10, 
+        title="Renault's Points", 
+        xlab="1 square = 1 point", 
+        colors = c("yellow", "black", "white")
+        ) ,
+waffle(SF, 
         rows = 10, 
         title="Ferrari's Points", 
         xlab="1 square = 1 point", 
         colors = c("red", "black", "white")
-        ) + labs(caption="Source: racefans.net | Graphic by Joseph Reina")
+        )+ labs(caption="Source: racefans.net | Graphic by Joseph Reina")
 )
 ```
+
+Next let's take a look at the actual table at the end of the season. Drivers that do better in races obviously will get more points because that is how points work. This is the table that shows just how good Pérez was. He was able to average beating his teammate by over three and a half positions. If we look at Average Race Position (AvgTRP), we see that the table is pretty consistent along that as well. However, there is a lot of overlap in the Average Qualifying position column. We'll take a look at that next. 
+
+```{r}
+F1table <- F1data %>%
+  group_by(Driver, Team, Points) %>%
+  arrange(desc(Points)) %>% 
+  ungroup()
+```
+
+```{r}
+F1table %>% kable() %>% 
+  kable_styling(bootstrap_options = c("striped", "condensed"))
+```
+
+Drivers get no points for better qualifying performances in Formula 1, it just sets them up to succeed in the race the following day. But what if they did? what if the drivers who qualified higher throughout the season got points based on that instead of the race? Hamilton still wins but now Russell has worked his way into second place. Now this is to be taken with a grain of salt because it's only from one race but still impressive in my book. aside from that, there are several little swaps throughout the field, but I want to focus on Leclerc again. On average he out qualified his teammate by just under four positions. That is absurd consistency to over-perform for that long. 
 
 ```{r}
 F1table <- F1data %>%
@@ -159,6 +196,10 @@ F1table %>% kable() %>%
   kable_styling(bootstrap_options = c("striped", "condensed"))
 ```
 
+Finally lets take a look at how many points each team scored and which drivers accounted for the most in their teams. Once again, it's the usual suspects apart from George Russell who didn't score any points all season in his Williams, but if you look really hard, you can see a little sliver on the end of the Mercedes bar. Those are his three points so hes not completely unrepresented. 
+  Besides him, again we can see Hamilton, Verstappen, and Leclerc dominating their team's points total with Ricciardo and Pérez also scoring the majority of their team's points. 
+  Another driver who deserves some acknowledgment is AlphaTauri's Pierre Gasly who appears to dominate the points total. What must be taken into consideration is that Gasly won one race which accounted for a third of his entire points total throughout the season. Winning a race is definitely a great accomplishment, but the consistency is just not there. Even though he was able to out-qualify his teammate Daniil Kvyat by two positions on average, he averaged a finish position less than one higher than him and this was not due to the car being bad as we saw with Russell. The data shows that his car had good pace, he just was able to find it only on rare occasions.
+
 ```{r}
 ggplot(F1data, aes(x=reorder(Team, Points), weight=Points, fill=Driver)) + 
   labs(
@@ -166,6 +207,9 @@ ggplot(F1data, aes(x=reorder(Team, Points), weight=Points, fill=Driver)) +
     x="Team", 
     y="Points")+ 
   geom_bar() + 
-  coord_flip()
+  coord_flip()+ labs(caption="Source: racefans.net | Graphic by Joseph Reina")
 ```
 
+  So as we have learned, being a good driver requires lots of different aspects and there are some drivers who stick out in some fields, and some who stick out in others. Unfortunately due to the nature of the sport, drivers who have very competitive teammates are difficult to compare outside of their garage. Pairs like Lando Norris and Carlos Sainz Jr., or Antonio Giovinazzi and Kimi Räikkönen deserve credit fo their achievements but they cannot be directly compared to other drivers because their equipment is not equal. 
+    When it comes to winning, Lewis Hamilton wins races. He has the best car and get the job done more often than not as evidenced by his average race position of 1.875. Max Verstappen is able to challenge Mercedes and the only thing holding him and Red Bull back is their lack of a competitive teammate helping Max to score points by putting the Mercedes under pressure. With Checo Pérez as his teammate in 2021 they will be hoping to finally end the seven years of Mercedes dominance. Daniel Ricciardo definitely helped keep Renault relevant in their final season before becoming Alpine Racing and he will look to continue his success as he races for McLaren in 2021. Charles Leclerc took the worst Ferrari race car in years and managed to make it look decent on occasions. His qualifying pace is frightening and teams should be on the lookout as the Ferrari boasts a more competitive car this season. Did someone say potential race winner this season? I wouldn't bet on it but at the same time I wouldn't be surprised if it happened. Finally, George Russell. This is another year of gaining good racing experience in one of the worst cars on the grid before he eyes a move to a new team. His agent is current Mercedes boss Toto Wolff, so naturally there is lots of speculation that he will move to Mercedes in the future to partner Hamilton. If he keeps perfecting his craft, there is a good chance he will land a seat in a top car and could potentially be a future world champion.
+  
